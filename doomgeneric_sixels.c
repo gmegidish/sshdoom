@@ -13,6 +13,7 @@
 #include <sys/time.h>
 #include <signal.h>
 #include <sixel.h>
+#include <stdlib.h>
 
 #define KEYQUEUE_SIZE 16
 
@@ -23,6 +24,13 @@ static unsigned int s_KeyQueueReadIndex = 0;
 static struct termios original_termios;
 static bool terminal_setup = false;
 static sixel_output_t *sixel_output = NULL;
+static int last_mouse_x = 0;
+static int last_mouse_y = 0;
+
+// Key state tracking for automatic release
+static unsigned char last_pressed_key = 0;
+static uint32_t last_key_time = 0;
+static const uint32_t KEY_RELEASE_DELAY = 150; // ms
 
 static int write_sixel_data(char *data, int size, void *priv)
 {
@@ -39,6 +47,7 @@ static void cleanup_terminal(void)
         sixel_output_unref(sixel_output);
         sixel_output = NULL;
     }
+    // printf("\033[?1003l"); // Disable mouse movement reporting
     printf("\033[?25h"); // Show cursor
     fflush(stdout);
 }
@@ -53,6 +62,7 @@ static void signal_handler(int sig)
 #define ARROW_DOWN  2  
 #define ARROW_RIGHT 3
 #define ARROW_LEFT  4
+#define MOUSE_MOVE  5
 
 static unsigned char convertToDoomKey(unsigned char key)
 {
@@ -69,18 +79,6 @@ static unsigned char convertToDoomKey(unsigned char key)
     case ARROW_LEFT:
         return KEY_LEFTARROW;
     case ARROW_RIGHT:
-        return KEY_RIGHTARROW;
-    case 'w':
-    case 'W':
-        return KEY_UPARROW;
-    case 's':
-    case 'S':
-        return KEY_DOWNARROW;
-    case 'a':
-    case 'A':
-        return KEY_LEFTARROW;
-    case 'd':
-    case 'D':
         return KEY_RIGHTARROW;
     case ' ':
         return KEY_USE;
@@ -138,7 +136,13 @@ static void handleKeyInput(void)
                             break;
                         }
                         if (arrow_key != 0) {
-                            addKeyToQueue(1, arrow_key); // Just key press, let game handle timing
+                            // Release previous key if different
+                            if (last_pressed_key != 0 && last_pressed_key != arrow_key) {
+                                addKeyToQueue(0, last_pressed_key);
+                            }
+                            addKeyToQueue(1, arrow_key); // Key press
+                            last_pressed_key = arrow_key;
+                            last_key_time = DG_GetTicksMs();
                         }
                     }
                 } else {
@@ -148,11 +152,20 @@ static void handleKeyInput(void)
                 addKeyToQueue(1, 27); // ESC key press only
             }
         } else {
-            addKeyToQueue(1, ch); // Just key press, let game handle timing
+            addKeyToQueue(1, ch); // Key press only
         }
     }
     
     fcntl(STDIN_FILENO, F_SETFL, flags);
+    
+    // Check for automatic key release
+    if (last_pressed_key != 0) {
+        uint32_t current_time = DG_GetTicksMs();
+        if (current_time - last_key_time > KEY_RELEASE_DELAY) {
+            addKeyToQueue(0, last_pressed_key);
+            last_pressed_key = 0;
+        }
+    }
 }
 
 void DG_Init(void)
@@ -185,6 +198,7 @@ void DG_Init(void)
     printf("\033[?25l"); // Hide cursor
     printf("\033[2J");   // Clear screen
     printf("\033[H");    // Move cursor to home
+    // printf("\033[?1003h"); // Enable mouse movement reporting - disabled for now
     fflush(stdout);
 }
 
