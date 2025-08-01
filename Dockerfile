@@ -16,7 +16,7 @@ WORKDIR /app
 COPY . .
 
 # Build the project using Makefile.sixels
-RUN make -f Makefile.sixels
+RUN make -f Makefile
 
 # Set the default command to run the game
-CMD ["./doomgeneric"]
+CMD ["./doomsixels"]
