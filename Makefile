@@ -13,8 +13,8 @@ endif
 
 
 CC=clang  # gcc or g++
-CFLAGS+=-I/usr/local/include -I/usr/include/sixel -Idoomgeneric/doomgeneric -O3
-LDFLAGS+=-L/usr/local/lib
+CFLAGS+=-I/usr/local/include -I/opt/homebrew/include -I/usr/include/sixel -Idoomgeneric/doomgeneric -O3
+LDFLAGS+=-L/usr/local/lib -L/opt/homebrew/lib
 LIBS+=-lm -lc -lsixel
 
 # subdirectory for objects
