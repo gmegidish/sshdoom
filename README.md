@@ -17,7 +17,9 @@ Well, congratulations! Your oddly specific dreams have come true! 🎉
 
 ### 🎮 What Is This Madness?
 
-SSHDOOM is DOOM but rendered with **SIXELS** in your terminal! Because why use a perfectly good graphics card when you can make your terminal emulator cry tears of pixel art? 😭
+SSHDOOM is DOOM but rendered with **SIXELS** in your terminal! If you'd play DOOM on a pregnancy tester, you'd play DOOM in terminal 💥
+
+Supported on iTerm2, xterm. For a list of supported terminal emulators, see https://www.arewesixelyet.com/ .
 
 Features that absolutely nobody asked for:
 - 🖼️ **SIXEL graphics** - Like regular graphics, but more complicated!
