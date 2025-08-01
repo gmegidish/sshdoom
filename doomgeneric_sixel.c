@@ -12,6 +12,7 @@
 #include <fcntl.h>
 #include <sys/time.h>
 #include <signal.h>
+#include <string.h>
 #include <sixel.h>
 #include <stdlib.h>
 
@@ -27,10 +28,50 @@ static sixel_output_t *sixel_output = NULL;
 static int last_mouse_x = 0;
 static int last_mouse_y = 0;
 
-// Key state tracking for automatic release
-static unsigned char last_pressed_key = 0;
-static uint32_t last_key_time = 0;
+// Key state tracking for automatic release (supports multiple keys)
+#define MAX_HELD_KEYS 8
+static struct {
+    unsigned char key;
+    uint32_t press_time;
+} held_keys[MAX_HELD_KEYS];
+static int num_held_keys = 0;
 static const uint32_t KEY_RELEASE_DELAY = 150; // ms
+static int frame_counter = 0;
+
+static unsigned char *rgb_buffer = 0;
+
+static char *marquee_text = "          SSHDOOM          ";
+static char *instruction_text = " Use arrow keys to move, Z to fire, SPACE to open/interact";
+
+static void add_held_key(unsigned char key) {
+    // Check if key is already held
+    for (int i = 0; i < num_held_keys; i++) {
+        if (held_keys[i].key == key) {
+            held_keys[i].press_time = DG_GetTicksMs(); // Update time
+            return;
+        }
+    }
+    
+    // Add new key if we have space
+    if (num_held_keys < MAX_HELD_KEYS) {
+        held_keys[num_held_keys].key = key;
+        held_keys[num_held_keys].press_time = DG_GetTicksMs();
+        num_held_keys++;
+    }
+}
+
+static void remove_held_key(unsigned char key) {
+    for (int i = 0; i < num_held_keys; i++) {
+        if (held_keys[i].key == key) {
+            // Shift remaining keys down
+            for (int j = i; j < num_held_keys - 1; j++) {
+                held_keys[j] = held_keys[j + 1];
+            }
+            num_held_keys--;
+            break;
+        }
+    }
+}
 
 static int write_sixel_data(char *data, int size, void *priv)
 {
@@ -89,6 +130,9 @@ static unsigned char convertToDoomKey(unsigned char key)
         return KEY_EQUALS;
     case '-':
         return KEY_MINUS;
+    case 'z':
+    case 'Z':
+        return KEY_FIRE; 
     default:
         if (key >= 'A' && key <= 'Z') {
             return key - 'A' + 'a';
@@ -136,34 +180,32 @@ static void handleKeyInput(void)
                             break;
                         }
                         if (arrow_key != 0) {
-                            // Release previous key if different
-                            if (last_pressed_key != 0 && last_pressed_key != arrow_key) {
-                                addKeyToQueue(0, last_pressed_key);
-                            }
                             addKeyToQueue(1, arrow_key); // Key press
-                            last_pressed_key = arrow_key;
-                            last_key_time = DG_GetTicksMs();
+                            add_held_key(arrow_key);
                         }
                     }
                 } else {
                     addKeyToQueue(1, 27); // ESC key press only
+                    add_held_key(27);
                 }
             } else {
                 addKeyToQueue(1, 27); // ESC key press only
+                add_held_key(27);
             }
         } else {
             addKeyToQueue(1, ch); // Key press only
+            add_held_key(ch);
         }
     }
     
     fcntl(STDIN_FILENO, F_SETFL, flags);
     
-    // Check for automatic key release
-    if (last_pressed_key != 0) {
-        uint32_t current_time = DG_GetTicksMs();
-        if (current_time - last_key_time > KEY_RELEASE_DELAY) {
-            addKeyToQueue(0, last_pressed_key);
-            last_pressed_key = 0;
+    // Check for automatic key releases
+    uint32_t current_time = DG_GetTicksMs();
+    for (int i = num_held_keys - 1; i >= 0; i--) {
+        if (current_time - held_keys[i].press_time > KEY_RELEASE_DELAY) {
+            addKeyToQueue(0, held_keys[i].key);
+            remove_held_key(held_keys[i].key);
         }
     }
 }
@@ -200,16 +242,19 @@ void DG_Init(void)
     printf("\033[H");    // Move cursor to home
     // printf("\033[?1003h"); // Enable mouse movement reporting - disabled for now
     fflush(stdout);
+
+    // make a copy so we can modify this
+    marquee_text = strdup(marquee_text);
+
+    rgb_buffer = malloc(DOOMGENERIC_RESX * DOOMGENERIC_RESY * 3);
+    if (!rgb_buffer) {
+        exit(1);
+    }
 }
 
 void DG_DrawFrame(void)
 {
     // Convert screen buffer to RGB format for sixel
-    unsigned char *rgb_buffer = malloc(DOOMGENERIC_RESX * DOOMGENERIC_RESY * 3);
-    if (!rgb_buffer) {
-        return;
-    }
-
     // Convert from RGBA to RGB
     uint32_t *screen = (uint32_t*)DG_ScreenBuffer;
     for (int i = 0; i < DOOMGENERIC_RESX * DOOMGENERIC_RESY; i++) {
@@ -241,7 +286,17 @@ void DG_DrawFrame(void)
             
             // Encode sixel
             printf("\033[H");
-            fflush(stdout);
+            
+            int marquee_len = strlen(marquee_text);
+
+            if ((frame_counter % 4) == 0) {
+                char c = marquee_text[0];
+		memmove(marquee_text, marquee_text + 1, marquee_len - 1);
+                marquee_text[marquee_len - 1] = c;
+            }
+            
+            printf("💀%s💀 %s\n", marquee_text, instruction_text);
+            frame_counter++;
             
             sixel_encode(rgb_buffer, DOOMGENERIC_RESX, DOOMGENERIC_RESY, 3, frame_dither, sixel_output);
             fflush(stdout);
@@ -251,7 +306,6 @@ void DG_DrawFrame(void)
         sixel_dither_unref(frame_dither);
     }
 
-    free(rgb_buffer);
     handleKeyInput();
 }
 
@@ -301,3 +355,4 @@ int main(int argc, char **argv)
 
     return 0;
 }
+
