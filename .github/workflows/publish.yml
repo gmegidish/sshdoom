@@ -31,5 +31,5 @@ jobs:
         context: .
         platforms: linux/amd64
         push: true
-        tags: sshdoom:${{ github.ref_name }}
+        tags: gmegidish/sshdoom:${{ github.ref_name }}, gmegidish/sshdoom:latest
 
