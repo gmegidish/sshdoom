@@ -9,9 +9,7 @@
         `8888Y' `8888Y' YP   YP Y8888D'  `Y88P'   `Y88P'  YP  YP  YP
 ```
 
-## 🚀 Yet another useless DOOM port! 🚀
-
-<video src="https://github.com/gmegidish/sshdoom-docs/raw/refs/heads/master/doom2.mp4" controls mute autoplay></video>
+https://github.com/user-attachments/assets/4edfef4f-57a9-4748-9fe1-837745a018ff
 
 ### 🎮 What is it?
 
