@@ -281,10 +281,6 @@ void DG_DrawFrame(void)
         );
         
         if (SIXEL_SUCCEEDED(status)) {
-            // Disable dithering for clean output
-            sixel_dither_set_diffusion_type(frame_dither, SIXEL_DIFFUSE_NONE);
-            
-            // Encode sixel
             printf("\033[H");
             
             int marquee_len = strlen(marquee_text);
@@ -297,6 +293,9 @@ void DG_DrawFrame(void)
             
             printf("💀%s💀 %s\n", marquee_text, instruction_text);
             frame_counter++;
+
+            // Disable dithering for clean output
+            sixel_dither_set_diffusion_type(frame_dither, SIXEL_DIFFUSE_NONE);
             
             sixel_encode(rgb_buffer, DOOMGENERIC_RESX, DOOMGENERIC_RESY, 3, frame_dither, sixel_output);
             fflush(stdout);
