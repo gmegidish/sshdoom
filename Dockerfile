@@ -1,22 +1,23 @@
-FROM ubuntu:22.04
+# Compile sources
+FROM ubuntu:25.04 AS builder
 
-# Set environment variables to avoid interactive prompts during package installation
-ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update
+RUN apt-get install -y gcc make libsixel-dev libsixel-bin clang
 
-# Update package list and install required packages
-RUN \
-    apt-get update && \
-    apt-get install -y gcc make libsixel-dev libsixel-bin clang && \
-    rm -rf /var/lib/apt/lists/*
-
-# Set working directory
 WORKDIR /app
-
-# Copy the entire doomgeneric directory
 COPY . .
 
-# Build the project using Makefile.sixels
 RUN make -f Makefile
 
-# Set the default command to run the game
-CMD ["./doomsixels"]
+# Now generate a small layer for docker
+
+FROM ubuntu:25.04
+RUN \
+    apt-get update && \
+    apt-get install -y libsixel-bin
+
+WORKDIR /app
+COPY --from=builder /app/doomsixel .
+COPY --from=builder /app/doom1.wad .
+CMD ["./doomsixel"]
+
