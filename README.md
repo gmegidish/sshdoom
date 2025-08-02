@@ -1,15 +1,10 @@
 ![](https://img.shields.io/badge/functionality-completely_useless-blue) ![](https://img.shields.io/badge/coverage-lol_what-red) ![](https://img.shields.io/badge/rock_paper-scissors-orange)
 
-```    
-                    .d8888. .d8888. db   db d8888b.  .d88b.   .d88b.  .88b  d88. 
-                    88'  YP 88'  YP 88   88 88  `8D .8P  Y8. .8P  Y8. 88'YbdP`88 
-                    `8bo.   `8bo.   88ooo88 88   88 88    88 88    88 88  88  88 
-                      `Y8b.   `Y8b. 88~~~88 88   88 88    88 88    88 88  88  88 
-                    db   8D db   8D 88   88 88  .8D `8b  d8' `8b  d8' 88  88  88 
-                    `8888Y' `8888Y' YP   YP Y8888D'  `Y88P'   `Y88P'  YP  YP  YP 
-```
+<div align="center">
+    <img height="400" alt="sshdoom-logo" src="https://github.com/user-attachments/assets/7f8cc2dc-2ba7-4217-a455-755fa3006fd2" />
+</div>
 
-https://github.com/user-attachments/assets/4edfef4f-57a9-4748-9fe1-837745a018ff
+https://github.com/user-attachments/assets/4cff23b9-8909-4278-a9dd-1281e2774334
 
 ### 🎮 What is it?
 
