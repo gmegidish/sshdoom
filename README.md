@@ -1,35 +1,53 @@
 # 🔥💀 SSHDOOM 💀🔥
 
 ```
-.d8888. .d8888. db   db d8888b.  .d88b.   .d88b.  .88b  d88. 
-88'  YP 88'  YP 88   88 88  `8D .8P  Y8. .8P  Y8. 88'YbdP`88 
-`8bo.   `8bo.   88ooo88 88   88 88    88 88    88 88  88  88 
-  `Y8b.   `Y8b. 88~~~88 88   88 88    88 88    88 88  88  88 
-db   8D db   8D 88   88 88  .8D `8b  d8' `8b  d8' 88  88  88 
-`8888Y' `8888Y' YP   YP Y8888D'  `Y88P'   `Y88P'  YP  YP  YP
+        .d8888. .d8888. db   db d8888b.  .d88b.   .d88b.  .88b  d88. 
+        88'  YP 88'  YP 88   88 88  `8D .8P  Y8. .8P  Y8. 88'YbdP`88 
+        `8bo.   `8bo.   88ooo88 88   88 88    88 88    88 88  88  88 
+          `Y8b.   `Y8b. 88~~~88 88   88 88    88 88    88 88  88  88 
+        db   8D db   8D 88   88 88  .8D `8b  d8' `8b  d8' 88  88  88 
+        `8888Y' `8888Y' YP   YP Y8888D'  `Y88P'   `Y88P'  YP  YP  YP
 ```
 
-## 🚀 Welcome to the Most Unnecessary Port of DOOM Ever! 🚀
+## 🚀 Yet another useless DOOM port! 🚀
 
-*"You know what? DOOM is great, but what if I could play it through SSH while pretending to work?"* 🤔
+### 🎮 What is it?
 
-Well, congratulations! Your oddly specific dreams have come true! 🎉
+SSHDOOM is DOOM but rendered with [**SIXELS**](https://en.wikipedia.org/wiki/Sixel) in your terminal! If you'd play DOOM on a pregnancy tester, you'd play DOOM in terminal 💥
 
-### 🎮 What Is This Madness?
+Supported on *iTerm2*, *xterm* and others. For a list of supported terminal emulators, see https://www.arewesixelyet.com/ .
 
-SSHDOOM is DOOM but rendered with **SIXELS** in your terminal! If you'd play DOOM on a pregnancy tester, you'd play DOOM in terminal 💥
+### 💥 Play it right now
 
-Supported on iTerm2, xterm. For a list of supported terminal emulators, see https://www.arewesixelyet.com/ .
+You can start playing DOOM right now by opening your terminal and typing:
+```bash
+ssh -C 666@sshdoom.megidish.net
+```
 
-Features that absolutely nobody asked for:
-- 🖼️ **SIXEL graphics** - Like regular graphics, but more complicated!
-- 📺 **Terminal rendering** - Say goodbye to your precious bandwidth!
-- 🎯 **Perfect for SSH** - Don't leave your terminal! Frag demons from anywhere in the world!
+If you want to run this locally (my home server is in Frankfurt, might be too slow for you), then you can just run:
+```bash
+docker run -i -t --platform linux/amd64 gmegidish/sshdoom:latest
+```
 
-### 🛠️ Building This Beautiful Disaster
+### 😱 Future of this
+
+I intended this to be a fun hack, and nothing serious. You may want to take this implementation forward:
+
+- Arrow keys auto release when a new key is pressed: this sucks, it's a bug
+- Mouse movement support: vt supports this!
+- Multiplayer on the same host: because why not!
+- Optimize sixels to use 256 colors: right now we convert to rgb888 and it's just wasteful on cpu
+
+### 🛠️ Building this blasphemy
+
+Clone this repo and its submodules using:
+```bash
+git clone --recursive https://github.com/gmegidish/sshdoom.git 
+cd sshdoom
+```
 
 Install libsixel using:
-```
+```bash
 # mac
 brew install libsixel
 
@@ -48,38 +66,27 @@ make
 
 Alternatively, you can just build using the Dockerfile
 
-### 🎮 Controls That Totally Work*
+### 🎮 Controls 
 
-*\*Results may vary. Side effects may include carpal tunnel and existential dread.*
+- Use the arrow keys to move forward, backward and turn.
+- Use `wasd` keys to move and strafe
+- `Space` to open door and push buttons like a gentleman
+- `Z` to pew pew
+- `ESC` to pause or open menu
 
-| Key | What It Does | Actual Result |
-|-----|--------------|---------------|
-| `w` | Move forward | Moves forward 🎯 |
-| `s` | Move backward | Moves backward 🎯 |
-| `a` | Strafe left | Strafes left 🎯 |
-| `d` | Strafe right | Strafes right 🎯 |
-| `↑` | Move forward | Actually works! 🙌 |
-| `↓` | Move backward | Still works! 🙌 |
-| `←` | Turn left | Turns left! 🔄 |
-| `→` | Turn right | Turns right! 🔄 |
-| `Space` | Use/Open doors | Opens doors like a gentleman 🚪 |
-| `Enter` | Confirm/Fire | Pew pew! 🔫 |
-| `ESC` | Menu/Pause | For when reality calls 📞 |
+### Credits
 
-### 🎯 Pro Tips for Maximum Chaos
+This port could not have been made without the works of:
+- [ozkl's doomgeneric](https://github.com/ozkl/doomgeneric) which is built upon
+- [maximevince's fbDOOM](https://github.com/maximevince/fbDOOM) which is built upon
+- [insane-adding-machines's DOOM](https://github.com/insane-adding-machines/DOOM) which is built upon
+- [id-software's DOOM](https://github.com/id-Software/DOOM), the gods themselves
 
-1. **Use a BIG terminal** - Like, REALLY big. Your DOOM pixels need room to breathe! 🫁
-2. **SSH into somewhere exotic** - Why play DOOM locally when you can add 200ms of lag? 🌍
-3. **Run it during a video call** - Assert dominance by fragging demons while discussing quarterly reports 📊
-4. **Use tmux** - Because nothing says "professional" like DOOM in a terminal multiplexer 🖥️
+And with the use of the mighty [libsixel](https://github.com/saitoha/libsixel) by [Hayaki Saito](https://github.com/saitoha).
+
+Code was 100% vibe coded with [Claude Code](https://www.anthropic.com/claude-code), ugly, but ships!
 
 ### 📜 License
 
-This project is licensed under the **GNU General Public License (GPL)** - see the `LICENSE` file for the full legal text that nobody reads but everyone should! 📋
-
-TL;DR: It's free, it's open source, and if you make it even more ridiculous, you have to share your improvements with the world. Because misery loves company! 🤝💀
-
----
-
-*Remember: Friends don't let friends play DOOM in production environments* 🚫💼
+Released under the **GNU General Public License (GPL)**
 
