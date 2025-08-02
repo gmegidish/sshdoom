@@ -11,6 +11,8 @@
 
 ## 🚀 Yet another useless DOOM port! 🚀
 
+<video src="https://github.com/gmegidish/sshdoom-docs/raw/refs/heads/master/doom2.mp4" controls mute autoplay></video>
+
 ### 🎮 What is it?
 
 SSHDOOM is DOOM but rendered with [**SIXELS**](https://en.wikipedia.org/wiki/Sixel) in your terminal! If you'd play DOOM on a pregnancy tester, you'd play DOOM in terminal 💥
