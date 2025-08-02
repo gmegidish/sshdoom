@@ -234,8 +234,6 @@ void DG_Init(void)
         exit(1);
     }
 
-    // We'll create dither objects per frame for perfect color accuracy
-
     // Hide cursor and clear screen
     printf("\033[?25l"); // Hide cursor
     printf("\033[2J");   // Clear screen
@@ -254,14 +252,22 @@ void DG_Init(void)
 
 void DG_DrawFrame(void)
 {
+    static int cleared_once = 0;
+    if (!cleared_once) {
+        // clear screen once, after all doom loading is done
+        printf("\033[2J");
+        cleared_once++;
+    }
+
     // Convert screen buffer to RGB format for sixel
     // Convert from RGBA to RGB
     uint32_t *screen = (uint32_t*)DG_ScreenBuffer;
+    uint8_t *ptr = rgb_buffer;
     for (int i = 0; i < DOOMGENERIC_RESX * DOOMGENERIC_RESY; i++) {
         uint32_t pixel = screen[i];
-        rgb_buffer[i * 3 + 0] = (pixel >> 16) & 0xFF; // R
-        rgb_buffer[i * 3 + 1] = (pixel >> 8) & 0xFF;  // G
-        rgb_buffer[i * 3 + 2] = pixel & 0xFF;         // B
+        *ptr++ = (pixel >> 16) & 0xFF; // R
+        *ptr++ = (pixel >> 8) & 0xFF;  // G
+        *ptr++ = pixel & 0xFF;         // B
     }
 
     // Create a fresh dither object for each frame - this gives perfect colors
