@@ -78,6 +78,57 @@ static int write_sixel_data(char *data, int size, void *priv)
     return fwrite(data, 1, size, stdout);
 }
 
+int W_CheckNumForName (char* name);
+int W_GetNumForName (char* name);
+void W_ReadLump(unsigned int lump, void *dest);
+
+// BGR to RGB mappings
+char ansiRGB[8] = {0, 4, 5, 6, 1, 2, 3, 7};
+
+static void printEndoom() {
+    int lumpFound = W_CheckNumForName("ENDOOM");
+    if (lumpFound == -1) {
+        // bail out if the IWAD doesn't have the ENDOOM lump
+        return;
+    }
+
+    // fetch ENDOOM lump
+    int lumpNum = W_GetNumForName("ENDOOM");
+    unsigned char *endoom = malloc(160*25);
+    W_ReadLump(lumpNum, endoom);
+
+    char bg, fg;
+    unsigned char str;
+    for (int i = 0; i < 25; i++) {
+        // start with a newline so that ENDOOM doesn't overwrite the sixel screen
+        printf("\n");
+        for (int j = 0; j < 160; j += 2) {
+            str = endoom[i*160 + j];
+
+            // check for invalid char-codes
+            if (str == 0xC4)
+                str = '-';      // map em dashes to hyphens
+            if (str == 0xDC || str == 0xDF)
+                str = ' ';      // map blocks to spaces
+
+            bg = ansiRGB[(endoom[i*160 + j + 1] & 0x70) >> 4] + 40;
+            fg = endoom[i*160 + j + 1] & 0xF;
+            if (fg > 7) {
+                fg = ansiRGB[fg - 8] + 90;
+            } else {
+                fg = ansiRGB[fg] + 30;
+            }
+
+            // map ANSI color codes to ENDOOM's specified tile color
+            printf("\033[0;%i;%im%c", bg, fg, str);
+        }
+    }
+
+    // reset the terminal's ANSI colors (Doom and Doom II technically do this already, but just in case)
+    printf("\033[0m\n");
+    free(endoom);
+}
+
 static void cleanup_terminal(void)
 {
     if (terminal_setup) {
@@ -90,6 +141,7 @@ static void cleanup_terminal(void)
     }
     // printf("\033[?1003l"); // Disable mouse movement reporting
     printf("\033[?25h"); // Show cursor
+    printEndoom();
     fflush(stdout);
 }
 
