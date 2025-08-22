@@ -1,4 +1,8 @@
-![](https://img.shields.io/badge/functionality-completely_useless-blue) ![](https://img.shields.io/badge/coverage-lol_what-red) ![](https://img.shields.io/badge/rock_paper-scissors-orange)
+[![Docker pulls](https://img.shields.io/docker/pulls/gmegidish/sshdoom?logo=Docker)](https://hub.docker.com/r/gmegidish/sshdoom)
+[![License: GPL-2.0](https://img.shields.io/badge/License-GNU%20GPL-blue)](LICENSE)
+![](https://img.shields.io/badge/functionality-completely_useless-blue)
+![](https://img.shields.io/badge/coverage-lol_what-red)
+![](https://img.shields.io/badge/rock_paper-scissors-orange)
 
 <div align="center">
     <img height="400" alt="sshdoom-logo" src="https://github.com/user-attachments/assets/7f8cc2dc-2ba7-4217-a455-755fa3006fd2" />
